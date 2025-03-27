@@ -1,3 +1,21 @@
+
+# main to dos:
+# enhance combat system
+# items stats with combat loop
+# introduce drops
+# implement consumables
+# expand inventory and introduce crafting
+# save/load functionality
+
+# to dos for code presentation:
+# implement unit tests
+# high quality coding standards
+# documentation via. README and comments
+
+
+
+
+
 import random
 
 class Item:
@@ -8,11 +26,12 @@ class Item:
     def __str__(self):
         return f"{self.name}: {self.description}" if self.description else self.name
 
+
 class Character:
     def __init__(self, name, hp=100):
         self.name = name
         self.hp = hp
-        self.inventory = []  # Inventory now holds Item objects
+        self.inventory = []  # Inventory holds Item objects in this list
 
     def is_alive(self):
         return self.hp > 0
@@ -37,6 +56,7 @@ class Character:
             for item in self.inventory:
                 print(f"  - {item}")
 
+
 class Enemy:
     def __init__(self, name, hp=50):
         self.name = name
@@ -54,6 +74,19 @@ class Enemy:
         self.hp -= damage
         print(f"{self.name} takes {damage} damage! (HP: {self.hp})")
 
+
+class Goblin(Enemy):
+    def __init__(self, name='Goblin', hp=50):
+        super().__init__(name, hp)
+
+class Slime(Enemy):
+    def __init__(self, name='Slime', hp=50):
+        super().__init__(name, hp)
+
+class Golden_Unicorn(Enemy):
+    def __init__(self, name='Golden Unicorn', hp=50):
+        super().__init__(name, hp)
+
 def combat(player, enemy):
     print(f"\nA wild {enemy.name} appears!")
     while player.is_alive() and enemy.is_alive():
@@ -64,6 +97,7 @@ def combat(player, enemy):
         print("3. Flee")
         action = input("Choose your action: ")
 
+        # action depending on player choice
         if action == '1':
             player.attack(enemy)
         elif action == '2':
@@ -100,12 +134,13 @@ def main_menu():
             player = Character(name)
             # Add a simple starter item as an Item object
             player.add_item(Item("Wooden Sword", "A basic wooden sword."))
-            combat(player, Enemy("Goblin"))
+            combat(player, Slime())
         elif choice == '2':
             print("Exiting game. Goodbye!")
             break
         else:
             print("Invalid choice.")
+
 
 if __name__ == "__main__":
     main_menu()
