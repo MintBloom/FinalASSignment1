@@ -58,15 +58,17 @@ class Character:
 
 
 class Enemy:
-    def __init__(self, name, hp=50):
+    def __init__(self, name, min_dmg, max_dmg, hp=50):
         self.name = name
+        self.min_dmg = min_dmg
+        self.max_dmg = max_dmg
         self.hp = hp
 
     def is_alive(self):
         return self.hp > 0
 
     def attack(self, character):
-        damage = random.randint(5, 10)
+        damage = random.randint(self.min_dmg, self.max_dmg)
         print(f"{self.name} attacks {character.name} for {damage} damage!")
         character.take_damage(damage)
 
@@ -74,18 +76,17 @@ class Enemy:
         self.hp -= damage
         print(f"{self.name} takes {damage} damage! (HP: {self.hp})")
 
+class Slime(Enemy):
+    def __init__(self, name="Slime", min_dmg=5, max_dmg=10, hp=50):
+        super().__init__(name, min_dmg, max_dmg, hp)
 
 class Goblin(Enemy):
-    def __init__(self, name='Goblin', hp=50):
-        super().__init__(name, hp)
-
-class Slime(Enemy):
-    def __init__(self, name='Slime', hp=50):
-        super().__init__(name, hp)
+    def __init__(self, name="Goblin", min_dmg=9, max_dmg=16, hp=50):
+        super().__init__(name, min_dmg, max_dmg, hp)
 
 class Golden_Unicorn(Enemy):
-    def __init__(self, name='Golden Unicorn', hp=50):
-        super().__init__(name, hp)
+    def __init__(self, name="Golden Unicorn", min_dmg=15, max_dmg=24, hp=50):
+        super().__init__(name, min_dmg, max_dmg, hp)
 
 def combat(player, enemy):
     print(f"\nA wild {enemy.name} appears!")
@@ -123,6 +124,15 @@ def combat(player, enemy):
     else:
         print("\nYou have been defeated.")
 
+
+def enemy_picker(x):
+    if 0.0 <= x <= 0.5:
+        return Slime()
+    elif 0.51 <= x <= 0.8:
+        return Goblin()
+    elif 0.81 <= x <= 1:
+        return Golden_Unicorn()
+
 def main_menu():
     while True:
         print("\n=== RPG Starter Adventure ===")
@@ -134,7 +144,7 @@ def main_menu():
             player = Character(name)
             # Add a simple starter item as an Item object
             player.add_item(Item("Wooden Sword", "A basic wooden sword."))
-            combat(player, Slime())
+            combat(player, enemy_picker(random.random()))
         elif choice == '2':
             print("Exiting game. Goodbye!")
             break
