@@ -14,8 +14,6 @@
 
 
 
-
-
 import random
 
 class Item:
@@ -24,7 +22,20 @@ class Item:
         self.description = description
 
     def __str__(self):
+        # returns an item's name and it's description
         return f"{self.name}: {self.description}" if self.description else self.name
+    
+class Weapon_Item(Item):
+    def __init__(self, name, description=""):
+        super().__init__(name, description)
+    
+class Stat_Boost_Item(Item):
+    def __init__(self, name, description=""):
+        super().__init__(name, description)
+
+class Health_Items(Item):
+    def __init__(self, name, description=""):
+        super().__init__(name, description)
 
 
 class Character:
@@ -124,8 +135,14 @@ def combat(player, enemy):
     else:
         print("\nYou have been defeated.")
 
+def consumable_menu():
+    pass
+
+def crafting_menu():
+    pass
 
 def enemy_picker(x):
+    # depending on the value of x, an enemy is returned. Slime is most likely to be returned, then Goblin, and the Golden Unicorn is least likely 
     if 0.0 <= x <= 0.5:
         return Slime()
     elif 0.51 <= x <= 0.8:
@@ -134,17 +151,33 @@ def enemy_picker(x):
         return Golden_Unicorn()
 
 def main_menu():
+    # main menu or "start" of the game
     while True:
         print("\n=== RPG Starter Adventure ===")
         print("1. Start Game")
         print("2. Exit")
         choice = input("Enter your choice: ")
         if choice == '1':
+            # User decides their character's name
             name = input("Enter your character's name: ")
             player = Character(name)
             # Add a simple starter item as an Item object
             player.add_item(Item("Wooden Sword", "A basic wooden sword."))
-            combat(player, enemy_picker(random.random()))
+            print(f"A wooden sword has been added to your inventory as using your bare hands from the beginning would be ineffective.\nNow you can defend yourself.")
+            while True:
+                print(f"What would you {player} like to do?")
+                print("1. Craft")
+                print("2. Venture into combat")
+                print("3. Random Drop Chance")
+                action = input("")
+                if action == "1":
+                    crafting_menu()
+                elif action == "2":
+                    combat(player, enemy_picker(random.random()))
+                elif action == "3":
+                    continue
+                else:
+                    print("Invalid choice.")
         elif choice == '2':
             print("Exiting game. Goodbye!")
             break
