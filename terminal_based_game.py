@@ -15,6 +15,7 @@
 
 
 import random
+import time
 
 class Item:
     def __init__(self, name, description=""):
@@ -34,8 +35,13 @@ class Stat_Boost_Item(Item):
         super().__init__(name, description)
 
 class Health_Items(Item):
-    def __init__(self, name, description=""):
+    def __init__(self, health_amount, name, description=""):
         super().__init__(name, description)
+        self.health_amount = health_amount
+
+    def apply_health(self):
+        # increases player hp by the specific item amount
+        Character.hp += self.health_amount
 
 
 class Character:
@@ -76,9 +82,11 @@ class Enemy:
         self.hp = hp
 
     def is_alive(self):
+        # checks if enemy health is above 0
         return self.hp > 0
 
     def attack(self, character):
+        # reduces the player's health by a specified amount
         damage = random.randint(self.min_dmg, self.max_dmg)
         print(f"{self.name} attacks {character.name} for {damage} damage!")
         character.take_damage(damage)
@@ -87,26 +95,33 @@ class Enemy:
         self.hp -= damage
         print(f"{self.name} takes {damage} damage! (HP: {self.hp})")
 
-class Slime(Enemy):
+class Slime(Enemy): # basic enemy
     def __init__(self, name="Slime", min_dmg=5, max_dmg=10, hp=50):
         super().__init__(name, min_dmg, max_dmg, hp)
 
-class Goblin(Enemy):
+class Goblin(Enemy): # basic enemy
     def __init__(self, name="Goblin", min_dmg=9, max_dmg=16, hp=50):
         super().__init__(name, min_dmg, max_dmg, hp)
 
-class Golden_Unicorn(Enemy):
+class Skeleton_Soldier(Enemy): # basic enemy
+    def __init__(self, name, min_dmg, max_dmg, hp=50):
+        super().__init__(name, min_dmg, max_dmg, hp)
+
+class Golden_Unicorn(Enemy): # basic enemy
     def __init__(self, name="Golden Unicorn", min_dmg=15, max_dmg=24, hp=50):
         super().__init__(name, min_dmg, max_dmg, hp)
 
+
+
 def combat(player, enemy):
+    # covers the combat loop for the BASIC enemy types
     print(f"\nA wild {enemy.name} appears!")
     while player.is_alive() and enemy.is_alive():
         # Player's turn
         print("\nYour turn:")
         print("1. Attack")
         print("2. Show Inventory")
-        print("3. Flee")
+        print("3. Defend")
         action = input("Choose your action: ")
 
         # action depending on player choice
@@ -114,13 +129,21 @@ def combat(player, enemy):
             player.attack(enemy)
         elif action == '2':
             player.show_inventory()
-            continue  # Skip enemy turn to allow further action after checking inventory.
+            input("")
+            print("Use an item?")
+            answer = input("")
+            if answer in ("yes", "y"):
+                pass
+            elif answer in ("no", "n"):
+                continue  # Skip enemy turn to allow further action after checking inventory.
+            else:
+                print("Invalid Input.")
         elif action == '3':
             if random.random() < 0.5: # random.random() generates a random number between 0-1
-                print("You successfully fled!")
-                return
+                print(f"{player} successfully defended!")
+                continue
             else:
-                print("Failed to flee!")
+                print(f"{player} couldn't defend!")
         else:
             print("Invalid action. Please choose 1, 2, or 3.")
             continue
@@ -150,34 +173,56 @@ def enemy_picker(x):
     elif 0.81 <= x <= 1:
         return Golden_Unicorn()
 
-def main_menu():
+def game_start():
+
+    # implement loading/retrievel of save files here - before character creation
+
+    # User decides their character's name
+    name = input("Enter your character's name: ")
+    player = Character(name)
+    # Add a simple starter item as an Item object
+    player.add_item(Item("Wooden Sword", "A basic wooden sword."))
+    print(f"A wooden sword has been added to your inventory as using your bare hands from the beginning would be ineffective.\nNow you can defend yourself.")
+    while True:
+        print("\n=== Main Menu ===")
+        print("1. Normal Dungeon")
+        print("2. Boss Rush")
+        print("3. Back")
+        print("?  Help")
+        choice = input("")
+        if choice == "1":
+            # starts normal dungeon game mode
+            print(f"{player} will now venture into the dungeon.")
+            while True:
+                i=1                
+                if i < 5:
+                    i+=1
+                    combat(player, enemy_picker(random.random()))
+                else:
+                    break
+        # boss combat stage
+        elif choice == "2":
+            # starts boss gauntlet game mode
+            print(f"{player} attempts the Boss Gauntlet.")
+        elif choice == "3":
+            # go to previous menu
+            break
+        elif choice == "?":
+            # a simply explanation of the games various choices
+            print("Normal Dungeon - Regular game mode which involves the player face four varying regular enemies, before a final boss confrontation.")
+            print("Boss Rush - A game mode where you will face all dungeon bosses (and only the dungeon bosses) in succession.")
+        else:
+            print("Invalid Input.")
+
+def start_menu():
     # main menu or "start" of the game
     while True:
-        print("\n=== RPG Starter Adventure ===")
+        print("\n=== RPG Dungeon Adventure ===")
         print("1. Start Game")
         print("2. Exit")
         choice = input("Enter your choice: ")
         if choice == '1':
-            # User decides their character's name
-            name = input("Enter your character's name: ")
-            player = Character(name)
-            # Add a simple starter item as an Item object
-            player.add_item(Item("Wooden Sword", "A basic wooden sword."))
-            print(f"A wooden sword has been added to your inventory as using your bare hands from the beginning would be ineffective.\nNow you can defend yourself.")
-            while True:
-                print(f"What would you {player} like to do?")
-                print("1. Craft")
-                print("2. Venture into combat")
-                print("3. Random Drop Chance")
-                action = input("")
-                if action == "1":
-                    crafting_menu()
-                elif action == "2":
-                    combat(player, enemy_picker(random.random()))
-                elif action == "3":
-                    continue
-                else:
-                    print("Invalid choice.")
+            game_start()
         elif choice == '2':
             print("Exiting game. Goodbye!")
             break
@@ -186,4 +231,4 @@ def main_menu():
 
 
 if __name__ == "__main__":
-    main_menu()
+    start_menu()
