@@ -49,6 +49,7 @@ class Character:
         self.name = name
         self.hp = hp
         self.inventory = []  # Inventory holds Item objects in this list
+        self.equipped_items = [] # Equipped_items hold 
 
     def is_alive(self):
         return self.hp > 0
@@ -64,6 +65,9 @@ class Character:
 
     def add_item(self, item):
         self.inventory.append(item)
+        
+    def remove_item(self, item):
+        self.inventory.remove(item)
 
     def show_inventory(self):
         print("Inventory:")
@@ -71,6 +75,20 @@ class Character:
             print("  (empty)")
         else:
             for item in self.inventory:
+                print(f"  - {item}")
+
+    def equip_item(self, item):
+        self.equipped_items.append(item)
+
+    def unequip_item(self, item):
+        self.equipped_items.remove(item)
+
+    def show_equipped_items(self):
+        print("Equipped Items:")
+        if not self.equipped_items:
+            print("  (empty)")
+        else:
+            for item in self.equipped_items:
                 print(f"  - {item}")
 
 
@@ -122,6 +140,7 @@ def combat(player, enemy):
         print("1. Attack")
         print("2. Show Inventory")
         print("3. Defend")
+        print("4. Dodge")
         action = input("Choose your action: ")
 
         # action depending on player choice
@@ -161,8 +180,17 @@ def combat(player, enemy):
 def consumable_menu():
     pass
 
-def crafting_menu():
-    pass
+# two minor healing items --> one major healing item
+def crafting_menu(player):
+    print(f"\nYou have these items available in your inventory:")
+    player.show_inventory()
+    print("\nCrafting Menu:")
+    print("2 Minor Healing Potions --> 1 Major Healing Potion")
+    print("What two things would you like to combine?")
+    choice_1 = input("Item 1 ->")
+    choice_2 = input("Item 2 ->")
+    if choice_1 and choice_2 in player.inventory():
+        print("wagwan!")          # last session finished here
 
 def enemy_picker(x):
     # depending on the value of x, an enemy is returned. Slime is most likely to be returned, then Goblin, and the Golden Unicorn is least likely 
@@ -200,6 +228,9 @@ def game_start():
                     combat(player, enemy_picker(random.random()))
                 else:
                     break
+            print(f"{player} stands before a large set of iron doors.")
+            print("1. Craft")
+            print("2. Proceed")
         # boss combat stage
         elif choice == "2":
             # starts boss gauntlet game mode
