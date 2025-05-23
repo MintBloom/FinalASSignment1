@@ -101,7 +101,11 @@ class Health_Item(Item):
     def apply_health(self, player):
         # increases player hp by the specific item amount
         player.hp += self.health_amount
-    
+
+class Crafting:
+
+
+
 ####################################################################################################################################################
 # Character Class
 #####################################################################################################################################################
@@ -379,8 +383,6 @@ def cycle_through_items(desired_item, player):
             continue
     return False
 
-
-################################################################################################################################
 def crafting_menu(player):
     # menu for crafting, and where items are removed and added from inventory
     while True:
@@ -660,14 +662,13 @@ def inventory_menu(player):
 
 def enemy_picker(x):
     # depending on the value of x, an enemy is returned.
-    if x == 1:
-        return Slime()
-    elif x == 2:
-        return Skeleton()
-    elif x == 3:
-        return Goblin()
-    elif x == 4:
-        return Golden_Unicorn()
+    list_of_enemies = {1:Slime, 2:Skeleton, 3:Goblin, 4:Golden_Unicorn}
+    return list_of_enemies[x]
+
+def boss_picker(x):
+    # depending on the value of x, an enemy is returned.
+    list_of_bosses = {1:Sapphire_Golem, 2:Slime_Queen, 3:Bob_The_Assassin_King, 4:Resurrected_Rubber_Ducky}
+    return list_of_bosses[x]
 
 def combat(player, enemy):
     # covers the combat loop for the BASIC enemy types
@@ -679,7 +680,7 @@ def combat(player, enemy):
         print("\nYour turn:")
         print("1. Attack")
         print("2. Show Inventory")
-        print("3. Defend")
+        print("3. Parry and Counter")
         print("4. Current Stats")
         match input("Choose your action: "):
             # action depending on player choice
@@ -696,33 +697,42 @@ def combat(player, enemy):
                         true_false.append(False)
                 if any(true_false):
                     print("Weapon Equipped.")
+                    player.attack(enemy, item_damage)                    
                 else:
-                    print("You have no weapon equipped")
-                    item_damage = 0
+                    print("You have no weapon equipped.")
+                    input("")
                     continue
-                player.attack(enemy, item_damage)
             case '2':
                 # interact with inventory
                 inventory_menu(player)
                 continue
             case '3':
-                # player chooses to defend
+                # player chooses to defend counter attack
                 true_false = []
                 for i in player.equipped_items:
                     if isinstance(i, Shield_Item): 
-                        # if the item in the list is an object belonging to the Wshield_Item class, True is added to the true_false list
-                        true_false.append(True)
+                        # if the item in the list is an object belonging to the shield_Item class, 1 is added to the true_false list
+                        true_false.append(1)
+                    if isinstance(i, Weapon_Item):
+                        true_false.append(2)
                     else:
-                        # if the item is anything else, False is added to the true_false list
-                        true_false.append(False)
-                if any(true_false):
-                    # in other words, if a shield is equipped, the player has a chance to defend 
-                    print("Shield Equipped.")
+                        true_false.append(0)
+                if any(x == 1 for x in true_false) and any(x == 2 for x in true_false):
+                    # in other words, if a shield is equipped and a sword is equipped, the player has a chance to defend and counter attack 
+                    print("Shield Equipped.\nWeapon Equipped.")
                     if random.random() < 0.5: # random.random() generates a random float between 0.0 and 1.0
-                        print(f"{player.name} successfully defended!")
+                        print(f"{player.name} successfully parried!")
+                        if random.random() < 0.5:
+                            print(f"{player.name} successfully counter attacked!")
+                            player.attack(enemy, item_damage)
+                            input("")
+                            continue
+                        print(f"{enemy.name} blocked {player.name}'s counter attack!")
                         continue
                     else:
-                        print(f"{player.name} couldn't defend!")                
+                        print(f"{player.name} was unable to defend!")
+                        enemy.attack(player)
+                        continue
                 else:
                     print("You have no Shield equipped")
                     input("")
@@ -738,11 +748,11 @@ def combat(player, enemy):
         # Enemy's turn if still alive
         if enemy.is_alive():
             print(f"\n{enemy.name}'s turn:")
-            enemy.attack(player,)
+            enemy.attack(player)
 
     if player.is_alive():
         print(f"\nYou defeated the {enemy.name}!")
-        enemy.drop(player) # after every basic enemy is killed, loot is dropped here
+        enemy.drop(player) # after a basic enemy is killed, loot is dropped here
         input("")
     else:
         print("\nYou have been defeated.\nDeath is not the end...")
@@ -768,17 +778,6 @@ def regular_enemy_combat_loop(player):
             print("Input error, please try again")
             input("")
             continue
-
-def boss_picker(x):
-    # depending on the value of x, an enemy is returned.
-    if x == 1:
-        return Sapphire_Golem()
-    elif x == 2:
-        return Slime_Queen()
-    elif x == 3:
-        return Bob_The_Assassin_King()
-    elif x == 4:
-        return Resurrected_Rubber_Ducky()
 
 def boss_combat_loop(player, boss):
     clear_terminal()
@@ -870,18 +869,18 @@ def boss_combat_loop(player, boss):
         input("")
         game_start()
 
-#def boss_rush(player):
-#    while True:
-#        boss_enemies = [
-#            Sapphire_Golem(),
-#            Bob_The_Assassin_King(),
-#            Slime_Queen(),
-#            Resurrected_Rubber_Ducky()
-#        ]
-#        current_boss = random.choice(boss_enemies)
-#        boss_enemies.remove(current_boss)
-#        boss_combat_loop(player, current_boss)
-#
+def boss_rush(player):
+    while True:
+        boss_enemies = [
+            Sapphire_Golem(),
+            Bob_The_Assassin_King(),
+            Slime_Queen(),
+            Resurrected_Rubber_Ducky()
+        ]
+        current_boss = random.choice(boss_enemies)
+        boss_enemies.remove(current_boss)
+        boss_combat_loop(player, current_boss)
+
 
 def game_start():
     # User decides their character's name
@@ -936,6 +935,8 @@ def game_start():
         elif choice == "2":
             # starts boss gauntlet game mode
             print(f"{player.name} attempts the Boss Gauntlet.")
+            input("")
+            boss_rush(player)
         elif choice == "3":
             # write data to a file and exit the game
             dump_data(player.inventory, player.equipped_items)
