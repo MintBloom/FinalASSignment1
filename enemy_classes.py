@@ -1,4 +1,23 @@
 
+import random
+
+class bcolors:  # {bcolors.HEADER} {bcolors.HEADER}
+    # wrapping text in a print statement with these headers will change the colour of that terminal text in the terminal
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def enemy_picker(x):
+    # depending on the value of x, an enemy is returned.
+    list_of_enemies = {1:Slime, 2:Skeleton, 3:Goblin, 4:Golden_Unicorn}
+    return list_of_enemies[x]
+
 class Enemy:
     # class for BASIC enemies
     def __init__(self, name, min_dmg, max_dmg, hp=50):
@@ -25,63 +44,14 @@ class Slime(Enemy): # basic enemy
     def __init__(self, name="Slime", min_dmg=5, max_dmg=10, hp=20):
         super().__init__(name, min_dmg, max_dmg, hp)
 
-    def drop(self, player):
-        # picks the drops that the player will recieve for killing this enemy
-        item_list = [
-            Health_Item("Minor Healing Potion", 20, "A strange concoction, most likely brewed in a foreign land. It has a sweet aroma."),
-            Stat_Boost_Item("Jar Of Slime", 5, 0, "desc"),
-            Stat_Boost_Item("Slime Droplet", 0, 0, "Does not grant any buff in its current state. Perhaps it can be used to craft with."),
-            Health_Item("Disgusting Candy", -10, "A small, malleable piece of old candy covered in some goey substance. Perhaps it can be turned into something wonderful...")
-        ]
-        list_of_loot = random.sample(item_list, k=2)
-        for i in list_of_loot:
-            player.inventory.append(i)
-            print(f"{self.name} dropped {bcolors.OKGREEN}{i.name}{bcolors.ENDC}! It was added to your inventory.")
-
 class Goblin(Enemy): # basic enemy
     def __init__(self, name="Goblin", min_dmg=8, max_dmg=12, hp=20):
         super().__init__(name, min_dmg, max_dmg, hp)
-
-    def drop(self, player):
-        # picks the drops that the player will recieve for killing this enemy
-        item_list = [
-            Health_Item("Minor Healing Potion", 20, "A strange concoction, most likely brewed in a foreign land. It has a sweet aroma."),
-            Weapon_Item("Goblin Sword", 20, "A sword forged in the Heart of Goblin Nests. It is in not in great shape, but will do plenty damage."),
-            Stat_Boost_Item("Goblin Eye", 3, 3, "desc"),
-        ]
-        list_of_loot = random.sample(item_list, k=1)
-        for i in list_of_loot:
-            player.inventory.append(i)
-            print(f"{self.name} dropped {bcolors.OKGREEN}{i.name}{bcolors.ENDC}! It was added to your inventory.")
 
 class Skeleton(Enemy): # basic enemy
     def __init__(self, name="Skeleton", min_dmg=8, max_dmg=12, hp=20):
         super().__init__(name, min_dmg, max_dmg, hp)
 
-    def drop(self, player):
-        # picks the drops that the player will recieve for killing this enemy
-        item_list = [
-            Health_Item("Minor Healing Potion", 20, "A strange concoction, most likely brewed in a foreign land. It has a sweet aroma."),
-            Shield_Item("Bone Shield", 10, "description"),
-            Stat_Boost_Item("Skeleton Bone Marrow", 0, 4, "desc"),
-        ]
-        list_of_loot = random.sample(item_list, k=1)
-        for i in list_of_loot:
-            player.inventory.append(i)
-            print(f"{self.name} dropped {bcolors.OKGREEN}{i.name}{bcolors.ENDC}! It was added to your inventory.")
-
 class Golden_Unicorn(Enemy): # basic enemy
     def __init__(self, name="Golden Unicorn", min_dmg=10, max_dmg=15, hp=15):
         super().__init__(name, min_dmg, max_dmg, hp)
-
-    def drop(self, player):
-        # picks the drops that the player will recieve for killing this enemy
-        item_list = [
-            Health_Item("Minor Healing Potion", 20, "A strange concoction, most likely brewed in a foreign land. It has a sweet aroma."),
-            Shield_Item("Bone Shield", 10, "description"),
-            Weapon_Item("Gold Spear", 25, "With the unicorn's horn as a tip, this spear does not miss it's mark."),
-        ]
-        list_of_loot = random.sample(item_list, k=1)
-        for i in list_of_loot:
-            player.inventory.append(i)
-            print(f"{self.name} dropped {bcolors.OKGREEN}{i.name}{bcolors.ENDC}! It was added to your inventory.")
